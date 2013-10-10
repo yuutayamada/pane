@@ -33,40 +33,39 @@
 (defun pane-toggle-window-structure ()
   (interactive)
   (when (equal major-mode 'scala-mode)
-    (let*
-        ((h-percents pane-window-horizontally-percentage)
-         (v-percents pane-window-vertically-percentage)
-         (to-3pane
-          (lambda ()
-            (split-window-vertically   (/ (* h-percents (window-height)) 100))
-            (split-window-horizontally (/ (* v-percents (window-width))  100))
-            (windmove-down)
-            (switch-to-buffer
-             (get-buffer-create (nth 0 pane-window-3pane-buffers)))
-            (windmove-up)
-            (windmove-right)
-            (switch-to-buffer
-             (get-buffer-create (nth 1 pane-window-3pane-buffers)))
-            (windmove-left)
-            (setq-local pane-window :3pane)))
-         (to-2pane
-          (lambda ()
-            (split-window-horizontally)
-            (windmove-right)
-            (switch-to-buffer
-             (get-buffer-create pane-window-2pane-other-buffer))
-            (windmove-left)
-            (setq-local pane-window :2pane))))
-      (delete-other-windows)
-      (if (not current-prefix-arg)
-          (case pane-window
-            (:3pane (funcall to-2pane))
-            (:2pane (funcall to-3pane))
-            (t      (funcall to-3pane)))
-        (setq pane-window-3pane-buffers
-              (reverse pane-window-3pane-buffers))
-        (when (equal :3pane pane-window)
-          (funcall to-3pane))))))
+    (delete-other-windows)
+    (if (not current-prefix-arg)
+        (case pane-window
+          (:3pane (pane-change-to-2pane))
+          (:2pane (pane-change-to-3pane))
+          (t      (pane-change-to-3pane)))
+      (setq pane-window-3pane-buffers
+            (reverse pane-window-3pane-buffers))
+      (when (equal :3pane pane-window)
+        (pane-change-to-3pane)))))
+
+(defun pane-change-to-3pane ()
+  (let ((h-percents pane-window-horizontally-percentage)
+        (v-percents pane-window-vertically-percentage))
+    (split-window-vertically   (/ (* h-percents (window-height)) 100))
+    (split-window-horizontally (/ (* v-percents (window-width))  100))
+    (windmove-down)
+    (switch-to-buffer
+     (get-buffer-create (nth 0 pane-window-3pane-buffers)))
+    (windmove-up)
+    (windmove-right)
+    (switch-to-buffer
+     (get-buffer-create (nth 1 pane-window-3pane-buffers)))
+    (windmove-left)
+    (setq-local pane-window :3pane)))
+
+(defun pane-change-to-2pane ()
+  (split-window-horizontally)
+  (windmove-right)
+  (switch-to-buffer
+   (get-buffer-create pane-window-2pane-other-buffer))
+  (windmove-left)
+  (setq-local pane-window :2pane))
 
 (provide 'pane)
 
