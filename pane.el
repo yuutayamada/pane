@@ -21,6 +21,14 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Configuration:
+;; (add-hook 'emacs-lisp-mode-hook
+;;           '(lambda ()
+;;              (setq-local pane-window-3pane-buffers
+;;                          '("*message*" "*scratch*"))
+;;              (setq-local pane-window-2pane-other-buffer "*scratch*")))
+;; (define-key emacs-lisp-mode-map (kbd "C-c C-o") pane-toggle-window-structure)
+
 (eval-when-compile (require 'cl))
 
 (defvar pane-window nil)
